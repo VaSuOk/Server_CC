@@ -17,16 +17,18 @@ namespace Server_CC.Controllers
         {
             usersContext = new UsersContext();
         }
-        [HttpGet("{Login}/{Password}")]
+       // [HttpGet("{Login}/{Password}")]
         //public ActionResult<int> GetLoginStatus(string Login, string Password)
        // {
             //return usersContext.UserLogin(Login, Password);
        // }
+
         [HttpGet("{ID}")]
         public ActionResult<User> GetUserByID(int ID)
         {
             return usersContext.GetUserByID(ID);
         }
+
 
         [HttpPost]
         public async Task<ActionResult<User>> UpdateUser(User user)

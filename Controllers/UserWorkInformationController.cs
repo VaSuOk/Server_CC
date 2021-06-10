@@ -18,6 +18,12 @@ namespace Server_CC.Controllers
             userWorkInformationContext = new UserWorkInformationContext();
         }
 
+        [HttpGet("{Region}/{Stage}/{Position}")]
+        public ActionResult<List<UserWorkInformation>> GetUserByStageAndPosition( string Region, string Stage, string Position)
+        {
+            return userWorkInformationContext.GetUserWIByStageAndPosition(Region, Stage, Position);
+        }
+
 
         [HttpGet]
         public ActionResult<List<UserWorkInformation>> GetQuestionnairesByID()
@@ -36,6 +42,18 @@ namespace Server_CC.Controllers
             {
                 return;
             }
+        }
+
+        [HttpPost]
+        public int UpdateUserWorkInformation(UserWorkInformation userWorkInformation)
+        {
+            return userWorkInformationContext.UpdateUserWI(userWorkInformation);
+        }
+
+        [HttpDelete("{id}")]
+        public int DeleteUserWI(int id)
+        {
+            return userWorkInformationContext.DeleteUserWI(id);
         }
     }
 }

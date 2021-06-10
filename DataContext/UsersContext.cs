@@ -18,6 +18,9 @@ namespace Server_CC.DataContext
         }
 
         #region Methods
+        
+
+
         public int CreateUser(User user)
         {
             try { 
@@ -116,10 +119,10 @@ namespace Server_CC.DataContext
             {
                 DBConnection.Get_Instance().Connect();
                 MySqlCommand command = new MySqlCommand(
-                            "UPDATE `user` SET `Name` = @Name, `Surname` = @Surname, `Email` = @Email, `Phone` = @Phone, `Region` = @Region, `Sity` = @Sity, `Image` = @Image, `Age` = @Age " +
-                            "WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
+                            "UPDATE `user` SET `Name` = @Name, `Surname` = @Surname, `Email` = @Email, `Phone` = @Phone, `Region` = @Region, `Sity` = @Sity, `Image` = @Image, `Birthday` = @Birthday" +
+                            " WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
 
-                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = user.id;
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = (int)user.id;
                 command.Parameters.Add("@Name", MySqlDbType.VarChar).Value = user.Name;
                 command.Parameters.Add("@Surname", MySqlDbType.VarChar).Value = user.Surname;
                 command.Parameters.Add("@Email", MySqlDbType.VarChar).Value = user.Email;
@@ -127,9 +130,9 @@ namespace Server_CC.DataContext
                 command.Parameters.Add("@Sity", MySqlDbType.VarChar).Value = user.Sity;
                 command.Parameters.Add("@Region", MySqlDbType.VarChar).Value = user.Region;
                 command.Parameters.Add("@Image", MySqlDbType.MediumBlob).Value = user.UserImage;
+                command.Parameters.Add("@Birthday", MySqlDbType.VarChar).Value = user.Birthday;
 
 
-                
 
                 if (command.ExecuteNonQuery() > 0)
                 {

@@ -25,5 +25,10 @@ namespace Server_CC.Controllers
                 return;
             }
         }
+        [HttpGet("{Region}/{Sity}/{Type}")]
+        public ActionResult<List<ConstructionObject>> GetUserByStageAndPosition(string Region, string Sity, string Type)
+        {
+            return constructionObjectContext.GetAllBObject(Region, Sity, Type);
+        }
     }
 }

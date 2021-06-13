@@ -72,6 +72,47 @@ namespace Server_CC.DataContext
                 return null;
             }
         }
+
+        public UserWorkInformation GetUserWIByID(int ID)
+        {
+            UsersContext usersContext = new UsersContext();
+            DataTable temp = new DataTable();
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlDataAdapter adapter = new MySqlDataAdapter();
+                MySqlCommand command = new MySqlCommand("SELECT * FROM `user_working_information` WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = ID;
+                adapter.SelectCommand = command;
+                adapter.Fill(temp);
+                if (temp.Rows.Count > 0)
+                {
+
+                    UserWorkInformation userWorkInformation = new UserWorkInformation();
+                    userWorkInformation.ID = Convert.ToUInt32(temp.Rows[0][0]);
+                    userWorkInformation.user = usersContext.GetUserByID(Convert.ToInt32(temp.Rows[0][1]));
+                    userWorkInformation.Stage = (temp.Rows[0][2]).ToString();
+                    userWorkInformation.Position = (temp.Rows[0][3]).ToString();
+                    userWorkInformation.WorkRegion = (temp.Rows[0][4]).ToString();
+                    userWorkInformation.Salary = (temp.Rows[0][5]).ToString();
+
+                    DBConnection.Get_Instance().Disconnect();
+
+                    return userWorkInformation;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                string tmp = ex.Message;
+                DBConnection.Get_Instance().Disconnect();
+                return null;
+            }
+        }
+
         public List<UserWorkInformation> GetAllUserWI()
         {
             List<UserWorkInformation> listUWI = new List<UserWorkInformation>();

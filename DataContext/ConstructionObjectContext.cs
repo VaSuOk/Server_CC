@@ -129,6 +129,105 @@ namespace Server_CC.DataContext
                 return -1;
             }
         }
+        public Customer GetCustomerByID(int ID)
+        {
+            DataTable temp = new DataTable();
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlDataAdapter adapter = new MySqlDataAdapter();
+                MySqlCommand command = new MySqlCommand("SELECT `ID` FROM `customer` WHERE `ID` = @ID ", DBConnection.Get_Instance().connection);
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = ID;
+                adapter.SelectCommand = command;
+                adapter.Fill(temp);
+                DBConnection.Get_Instance().Disconnect();
+                if (temp.Rows.Count > 0)
+                {
+                    Customer customer = new Customer();
+                    customer.ID = Convert.ToInt32(temp.Rows[0][0]);
+                    customer.PIB = Convert.ToString(temp.Rows[0][1]);
+                    customer.Phone = Convert.ToString(temp.Rows[0][2]);
+                    customer.Email = Convert.ToString(temp.Rows[0][3]);
+                    return customer;
+                }
+
+                else
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return null;
+                }
+
+            }
+            catch
+            {
+                DBConnection.Get_Instance().Disconnect();
+                return null;
+            }
+        }
+
+        public List<ConstructionObject> GetAllBObject(string Region, string Sity, string Type)
+        {
+            string query; bool isMany = false;
+            if (Region == "none") { query = ""; }
+            else { query = "`Region` = '" + Region + "' "; isMany = true; }
+            if (Sity == "none") { query += ""; }
+            else
+            {
+                if (isMany) { query += " AND  `Sity` = '" + Sity + "' "; }
+                else { isMany = true; query = " `Sity` = '" + Sity + "' "; }
+            }
+            if (Type == "none") { query += ""; }
+            else
+            {
+                if (isMany) { query += " AND  `TypeBuilding` = '" + Type + "' "; }
+                else { isMany = true; query = " `TypeBuilding` = '"+Type+"' "; }
+            }
+
+            if (query != "") { query = "WHERE " + query; }
+
+            List<ConstructionObject> listObject = new List<ConstructionObject>();
+            DataTable temp = new DataTable();
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlDataAdapter adapter = new MySqlDataAdapter();
+                MySqlCommand command = new MySqlCommand("SELECT * FROM `constructionobject` " + query, DBConnection.Get_Instance().connection);
+                adapter.SelectCommand = command;
+                adapter.Fill(temp);
+                if (temp.Rows.Count > 0)
+                {
+                    for (int i = 0; i < temp.Rows.Count; i++)
+                    {
+                        ConstructionObject constructionObject = new ConstructionObject();
+                        constructionObject.ID = Convert.ToInt32(temp.Rows[i][0]);
+                        constructionObject.customer = GetCustomerByID(Convert.ToInt32(temp.Rows[i][1]));
+                        constructionObject.Region = Convert.ToString(temp.Rows[i][2]);
+                        constructionObject.Sity = Convert.ToString(temp.Rows[i][3]);
+                        constructionObject.Street = Convert.ToString(temp.Rows[i][4]);
+                        constructionObject.TypeBuilding = Convert.ToString(temp.Rows[i][5]);
+                        constructionObject.TypeRoof = Convert.ToString(temp.Rows[i][6]);
+                        constructionObject.RoofMaterial = Convert.ToString(temp.Rows[i][7]);
+                        constructionObject.WallMaterial = Convert.ToString(temp.Rows[i][8]);
+                        constructionObject.DataCreate = Convert.ToString(temp.Rows[i][9]);
+                        constructionObject.Image = (byte[])(temp.Rows[0][10]);
+                        listObject.Add(constructionObject);
+                    }
+                    DBConnection.Get_Instance().Disconnect();
+
+                    return listObject;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                string tmp = ex.Message;
+                DBConnection.Get_Instance().Disconnect();
+                return null;
+            }
+        }
 
     }
 }

@@ -36,6 +36,17 @@ namespace Server_CC.Controllers
             return BrigadeContext.GetBrigade(Region, Stage, isWork);
         }
 
+        [HttpPost]
+        public int UpdateUserWorkInformation(Brigade brigade)
+        {
+            return BrigadeContext.UpdateBrigade(brigade);
+        }
+
+        [HttpDelete("{id}")]
+        public int DeleteUserWI(int id)
+        {
+            return BrigadeContext.DeleteBrigade(id);
+        }
 
     }
 }

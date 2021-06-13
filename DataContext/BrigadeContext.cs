@@ -115,5 +115,79 @@ namespace Server_CC.DataContext
                 return null;
             }
         }
+        public static int UpdateBrigade(Brigade brigade)
+        {
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlCommand command = new MySqlCommand(
+                            "UPDATE `brigade` SET `Name` = @Name, `WorkRegion` = @WorkRegion, `WorkStage` = @WorkStage, `Amount` = @Amount," +
+                            " `user1` = @user1, `user2` = @user2, `user3` = @user3, `user4` = @user4, `user5` = @user5, `user6` = @user6, `user7` = @user7, `user8` = @user8, `TaskID` = @TaskID " +
+                            "WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
+
+                command.Parameters.Add("@Name", MySqlDbType.VarChar).Value = brigade.Name;
+                command.Parameters.Add("@WorkRegion", MySqlDbType.VarChar).Value = brigade.WorkRegion;
+                command.Parameters.Add("@WorkStage", MySqlDbType.VarChar).Value = brigade.WorkStage;
+                command.Parameters.Add("@Amount", MySqlDbType.Int32).Value = brigade.Amount;
+
+                command.Parameters.Add("@user1", MySqlDbType.Int32).Value = brigade.ID_user1;
+                command.Parameters.Add("@user2", MySqlDbType.Int32).Value = brigade.ID_user2;
+                command.Parameters.Add("@user3", MySqlDbType.Int32).Value = brigade.ID_user3;
+                command.Parameters.Add("@user4", MySqlDbType.Int32).Value = brigade.ID_user4;
+                command.Parameters.Add("@user5", MySqlDbType.Int32).Value = brigade.ID_user5;
+                command.Parameters.Add("@user6", MySqlDbType.Int32).Value = brigade.ID_user6;
+                command.Parameters.Add("@user7", MySqlDbType.Int32).Value = brigade.ID_user7;
+                command.Parameters.Add("@user8", MySqlDbType.Int32).Value = brigade.ID_user8;
+                command.Parameters.Add("@TaskID", MySqlDbType.Int32).Value = brigade.TaskID;
+
+
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = brigade.ID;
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 1;
+                }
+                else
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                string tmp = ex.Message;
+                DBConnection.Get_Instance().Disconnect();
+                return -1;
+            }
+        }
+
+        public static int DeleteBrigade(int id)
+        {
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlCommand command = new MySqlCommand(
+                            "DELETE FROM `brigade` " +
+                            "WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
+
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = id;
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 1;
+                }
+                else
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 0;
+                }
+            }
+            catch
+            {
+                return -1;
+            }
+        }
     }
 }

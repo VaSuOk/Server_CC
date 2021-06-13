@@ -24,6 +24,11 @@ namespace Server_CC.Controllers
             return userWorkInformationContext.GetUserWIByStageAndPosition(Region, Stage, Position);
         }
 
+        [HttpGet("{ID}")]
+        public UserWorkInformation GetUserByID(int ID)
+        {
+            return userWorkInformationContext.GetUserWIByID(ID);
+        }
 
         [HttpGet]
         public ActionResult<List<UserWorkInformation>> GetQuestionnairesByID()

@@ -24,6 +24,12 @@ namespace Server_CC.Controllers
             return userWorkInformationContext.GetUserWIByStageAndPosition(Region, Stage, Position);
         }
 
+        [HttpGet("{Name}/{Surname}")]
+        public ActionResult<List<UserWorkInformation>> GetUserByInitial(string Name, string Surname)
+        {
+            return userWorkInformationContext.GetUserWIByNameAndSurname(Name, Surname);
+        }
+
         [HttpGet("{ID}")]
         public UserWorkInformation GetUserByID(int ID)
         {

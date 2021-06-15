@@ -25,10 +25,28 @@ namespace Server_CC.Controllers
                 return;
             }
         }
+        [HttpGet("{Initials}/{Street}")]
+        public ActionResult<List<ConstructionObject>> GetUserBySearch(string Initials, string Street)
+        {
+            return constructionObjectContext.GetConstructionOBySearch(Initials, Street);
+        }
+
         [HttpGet("{Region}/{Sity}/{Type}")]
         public ActionResult<List<ConstructionObject>> GetUserByStageAndPosition(string Region, string Sity, string Type)
         {
             return constructionObjectContext.GetAllBObject(Region, Sity, Type);
+        }
+
+        [HttpPost]
+        public int UpdateConstruction(ConstructionObject  constructionObject)
+        {
+            return constructionObjectContext.UpdateCunstructionO(constructionObject);
+        }
+
+        [HttpDelete("{id}")]
+        public int DeleteUserWI(int id)
+        {
+            return constructionObjectContext.DeleteConstruction(id);
         }
     }
 }

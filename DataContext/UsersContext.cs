@@ -75,6 +75,54 @@ namespace Server_CC.DataContext
                 return -1;
             }
         }
+        public List<User> GetUserByInitial(string Name, string Surname)
+        {
+            string query; bool isMany = false;
+            if (Name == "none") { query = ""; }
+            else { query = "`Name` = '" + Name + "'"; isMany = true; }
+            if (Surname == "none") { query += ""; }
+            else
+            {
+                if (isMany) { query += " AND  `Surname` = '" + Surname + "'"; }
+                else { query = "`Surname` = '" + Surname + "'"; isMany = true; }
+            }
+            if (query != "") { query = "WHERE " + query; }
+            DataTable temp = new DataTable();
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlDataAdapter adapter = new MySqlDataAdapter();
+                MySqlCommand command = new MySqlCommand("SELECT * FROM `user` "+query, DBConnection.Get_Instance().connection);
+                adapter.SelectCommand = command;
+                adapter.Fill(temp);
+                List<User> users = new List<User>();
+                DBConnection.Get_Instance().Disconnect();
+                if (temp.Rows.Count > 0)
+                {
+                    for (int i = 0; i < temp.Rows.Count; i++)
+                    {
+                        User user = new User();
+                        user.id = Convert.ToUInt32(temp.Rows[i][0]);
+                        user.Name = Convert.ToString(temp.Rows[i][1]);
+                        user.Surname = Convert.ToString(temp.Rows[i][2]); user.Email = Convert.ToString(temp.Rows[i][3]);
+                        user.Phone = Convert.ToString(temp.Rows[i][4]); user.Region = Convert.ToString(temp.Rows[i][5]);
+                        user.Sity = Convert.ToString(temp.Rows[i][6]); user.UserImage = (byte[])(temp.Rows[i][7]);
+                        user.Birthday = Convert.ToString(temp.Rows[i][8]);
+
+
+                        users.Add(user);
+                    }
+                    return users;
+                }
+                else
+                    return null;
+            }
+            catch
+            {
+                DBConnection.Get_Instance().Disconnect();
+                return null;
+            }
+        }
         public User GetUserByID(int ID)
         {
             DataTable temp = new DataTable();

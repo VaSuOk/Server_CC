@@ -31,9 +31,15 @@ namespace Server_CC.Controllers
         }
 
         [HttpGet("{Region}/{Stage}/{isWork}")]
-        public ActionResult<List<Brigade>> GetUserByStageAndPosition(string Region, string Stage, bool isWork)
+        public ActionResult<List<Brigade>> GetBrigadeByFilter(string Region, string Stage, bool isWork)
         {
             return BrigadeContext.GetBrigade(Region, Stage, isWork);
+        }
+
+        [HttpGet("{Name}")]
+        public ActionResult<List<Brigade>> GetBrigadeByName(string Name)
+        {
+            return BrigadeContext.GetBrigadeByName(Name);
         }
 
         [HttpPost]

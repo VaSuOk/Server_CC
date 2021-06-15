@@ -136,7 +136,7 @@ namespace Server_CC.DataContext
             {
                 DBConnection.Get_Instance().Connect();
                 MySqlDataAdapter adapter = new MySqlDataAdapter();
-                MySqlCommand command = new MySqlCommand("SELECT `ID` FROM `customer` WHERE `ID` = @ID ", DBConnection.Get_Instance().connection);
+                MySqlCommand command = new MySqlCommand("SELECT * FROM `customer` WHERE `ID` = @ID ", DBConnection.Get_Instance().connection);
                 command.Parameters.Add("@ID", MySqlDbType.Int32).Value = ID;
                 adapter.SelectCommand = command;
                 adapter.Fill(temp);
@@ -149,6 +149,54 @@ namespace Server_CC.DataContext
                     customer.Phone = Convert.ToString(temp.Rows[0][2]);
                     customer.Email = Convert.ToString(temp.Rows[0][3]);
                     return customer;
+                }
+
+                else
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return null;
+                }
+
+            }
+            catch
+            {
+                DBConnection.Get_Instance().Disconnect();
+                return null;
+            }
+        }
+
+        public List<Customer> GetCustomerByInitials(string Initials)
+        {
+            string query;
+            if(Initials == "none") { query = ""; }
+            else
+            {
+                query = "WHERE `PIB` = '" + Initials + "'";
+            }
+            DataTable temp = new DataTable();
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlDataAdapter adapter = new MySqlDataAdapter();
+                MySqlCommand command = new MySqlCommand("SELECT * FROM `customer` "+ query, DBConnection.Get_Instance().connection);
+
+                adapter.SelectCommand = command;
+                adapter.Fill(temp);
+                DBConnection.Get_Instance().Disconnect();
+                if (temp.Rows.Count > 0)
+                {
+                    List<Customer> customers = new List<Customer>();
+                    for (int i = 0; i < temp.Rows.Count; i++)
+                    {
+                        Customer customer = new Customer();
+                        customer.ID = Convert.ToInt32(temp.Rows[i][0]);
+                        customer.PIB = Convert.ToString(temp.Rows[i][1]);
+                        customer.Phone = Convert.ToString(temp.Rows[i][2]);
+                        customer.Email = Convert.ToString(temp.Rows[i][3]);
+                        customers.Add(customer);
+                    }
+                        
+                    return customers;
                 }
 
                 else
@@ -226,6 +274,221 @@ namespace Server_CC.DataContext
                 string tmp = ex.Message;
                 DBConnection.Get_Instance().Disconnect();
                 return null;
+            }
+        }
+
+        public List<ConstructionObject> GetConstructionOBySearch(string Initials, string Street)
+        {
+            string query;
+            List<Customer> customers = null;
+            if (Initials != "none")
+            {
+                customers = GetCustomerByInitials(Initials);
+            }
+            List<ConstructionObject> listObject = new List<ConstructionObject>();
+
+            if (customers != null)
+            {
+                foreach (var item in customers)
+                {
+                    if(Street == "none") { query = "WHERE `ID_Customer` = '" + item.ID + "' "; }
+                    else
+                    {
+                        query = "WHERE `ID_Customer` = '" + item.ID + "' AND `Street` = '" + Street + "' ";
+                    }
+                    DataTable temp = new DataTable();
+                    try
+                    {
+                        DBConnection.Get_Instance().Connect();
+                        MySqlDataAdapter adapter = new MySqlDataAdapter();
+                        MySqlCommand command = new MySqlCommand("SELECT * FROM `constructionobject` " + query, DBConnection.Get_Instance().connection);
+                        adapter.SelectCommand = command;
+                        adapter.Fill(temp);
+                        if (temp.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < temp.Rows.Count; i++)
+                            {
+                                ConstructionObject constructionObject = new ConstructionObject();
+                                constructionObject.ID = Convert.ToInt32(temp.Rows[i][0]);
+                                constructionObject.customer = GetCustomerByID(Convert.ToInt32(temp.Rows[i][1]));
+                                constructionObject.Region = Convert.ToString(temp.Rows[i][2]);
+                                constructionObject.Sity = Convert.ToString(temp.Rows[i][3]);
+                                constructionObject.Street = Convert.ToString(temp.Rows[i][4]);
+                                constructionObject.TypeBuilding = Convert.ToString(temp.Rows[i][5]);
+                                constructionObject.TypeRoof = Convert.ToString(temp.Rows[i][6]);
+                                constructionObject.RoofMaterial = Convert.ToString(temp.Rows[i][7]);
+                                constructionObject.WallMaterial = Convert.ToString(temp.Rows[i][8]);
+                                constructionObject.DataCreate = Convert.ToString(temp.Rows[i][9]);
+                                constructionObject.Image = (byte[])(temp.Rows[0][10]);
+                                listObject.Add(constructionObject);
+                            }
+                            DBConnection.Get_Instance().Disconnect();
+
+                            return listObject;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        string tmp = ex.Message;
+                        DBConnection.Get_Instance().Disconnect();
+                        return null;
+                    }
+                }
+                return listObject;
+                
+            }
+            else if(Street != "none")
+            {
+                
+                DataTable temp = new DataTable();
+                try
+                {
+                    DBConnection.Get_Instance().Connect();
+                    MySqlDataAdapter adapter = new MySqlDataAdapter();
+                    MySqlCommand command = new MySqlCommand("SELECT * FROM `constructionobject` WHERE `Street` = '"+Street+"' ", DBConnection.Get_Instance().connection);
+                    adapter.SelectCommand = command;
+                    adapter.Fill(temp);
+                    if (temp.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < temp.Rows.Count; i++)
+                        {
+                            ConstructionObject constructionObject = new ConstructionObject();
+                            constructionObject.ID = Convert.ToInt32(temp.Rows[i][0]);
+                            constructionObject.customer = GetCustomerByID(Convert.ToInt32(temp.Rows[i][1]));
+                            constructionObject.Region = Convert.ToString(temp.Rows[i][2]);
+                            constructionObject.Sity = Convert.ToString(temp.Rows[i][3]);
+                            constructionObject.Street = Convert.ToString(temp.Rows[i][4]);
+                            constructionObject.TypeBuilding = Convert.ToString(temp.Rows[i][5]);
+                            constructionObject.TypeRoof = Convert.ToString(temp.Rows[i][6]);
+                            constructionObject.RoofMaterial = Convert.ToString(temp.Rows[i][7]);
+                            constructionObject.WallMaterial = Convert.ToString(temp.Rows[i][8]);
+                            constructionObject.DataCreate = Convert.ToString(temp.Rows[i][9]);
+                            constructionObject.Image = (byte[])(temp.Rows[0][10]);
+                            listObject.Add(constructionObject);
+                        }
+                        DBConnection.Get_Instance().Disconnect();
+
+                        return listObject;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string tmp = ex.Message;
+                    DBConnection.Get_Instance().Disconnect();
+                    return null;
+                }
+            }
+            else return null;
+        }
+
+        public int UpdateCunstructionO(ConstructionObject  constructionObject)
+        {
+            UpdateCustomer(constructionObject.customer);
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlCommand command = new MySqlCommand(
+                            "UPDATE `constructionobject` SET `ID_Customer` = @ID_Customer, `Region` = @Region, `Sity` = @Sity, `Street` = @Street," +
+                            " `TypeBuilding` = @TypeBuilding, `TypeRoof` = @TypeRoof, `RoofMaterial` = @RoofMaterial, `WallMaterial` = @WallMaterial, `DataCreate` = @DataCreate, `Image` = @Image " +
+                            "WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
+                command.Parameters.Add("@ID_Customer", MySqlDbType.Int32).Value = constructionObject.customer.ID;
+                command.Parameters.Add("@Region", MySqlDbType.VarChar).Value = constructionObject.Region;
+                command.Parameters.Add("@Sity", MySqlDbType.VarChar).Value = constructionObject.Sity;
+                command.Parameters.Add("@Street", MySqlDbType.VarChar).Value = constructionObject.Street;
+                command.Parameters.Add("@TypeBuilding", MySqlDbType.VarChar).Value = constructionObject.TypeBuilding;
+                command.Parameters.Add("@TypeRoof", MySqlDbType.VarChar).Value = constructionObject.TypeRoof;
+                command.Parameters.Add("@RoofMaterial", MySqlDbType.VarChar).Value = constructionObject.RoofMaterial;
+                command.Parameters.Add("@WallMaterial", MySqlDbType.VarChar).Value = constructionObject.WallMaterial;
+                command.Parameters.Add("@DataCreate", MySqlDbType.VarChar).Value = constructionObject.DataCreate;
+                command.Parameters.Add("@Image", MySqlDbType.MediumBlob).Value = constructionObject.Image;
+
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = constructionObject.ID;
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 1;
+                }
+                else
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                string tmp = ex.Message;
+                DBConnection.Get_Instance().Disconnect();
+                return -1;
+            }
+        }
+
+        public int UpdateCustomer(Customer customer)
+        {
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlCommand command = new MySqlCommand(
+                            "UPDATE `customer` SET `PIB` = @PIB, `Phone	` = @Phone	, `Email` = @Email" +
+                            " WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
+
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = customer.ID;
+                command.Parameters.Add("@PIB", MySqlDbType.VarChar).Value = customer.PIB;
+                command.Parameters.Add("@Phone", MySqlDbType.VarChar).Value = customer.Phone;
+                command.Parameters.Add("@Email", MySqlDbType.VarChar).Value = customer.Email;
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 1;
+                }
+                else
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                string tmp = ex.Message;
+                DBConnection.Get_Instance().Disconnect();
+                return -1;
+            }
+        }
+
+        public int DeleteConstruction(int id)
+        {
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlCommand command = new MySqlCommand(
+                            "DELETE FROM `constructionobject` " +
+                            "WHERE `ID` = @ID", DBConnection.Get_Instance().connection);
+
+                command.Parameters.Add("@ID", MySqlDbType.Int32).Value = id;
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 1;
+                }
+                else
+                {
+                    DBConnection.Get_Instance().Disconnect();
+                    return 0;
+                }
+            }
+            catch
+            {
+                return -1;
             }
         }
 

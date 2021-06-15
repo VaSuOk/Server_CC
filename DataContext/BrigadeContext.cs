@@ -47,6 +47,63 @@ namespace Server_CC.DataContext
             }
         }
 
+        public static List<Brigade> GetBrigadeByName(string Name)
+        {
+            string query;
+            if (Name == "none") { query = ""; }
+            else { query = "`Name` = '" + Name + "'"; }
+
+            if (query != "") { query = "WHERE " + query; }
+
+            List<Brigade> listBrigade = new List<Brigade>();
+            DataTable temp = new DataTable();
+            try
+            {
+                DBConnection.Get_Instance().Connect();
+                MySqlDataAdapter adapter = new MySqlDataAdapter();
+                MySqlCommand command = new MySqlCommand("SELECT * FROM `brigade` " + query, DBConnection.Get_Instance().connection);
+                adapter.SelectCommand = command;
+                adapter.Fill(temp);
+                if (temp.Rows.Count > 0)
+                {
+                    for (int i = 0; i < temp.Rows.Count; i++)
+                    {
+                        Brigade brigade = new Brigade();
+                        brigade.ID = Convert.ToInt32(temp.Rows[i][0]);
+                        brigade.Name = Convert.ToString(temp.Rows[i][1]);
+                        brigade.WorkRegion = Convert.ToString(temp.Rows[i][2]);
+                        brigade.WorkStage = Convert.ToString(temp.Rows[i][3]);
+                        brigade.Amount = Convert.ToInt32(temp.Rows[i][4]);
+
+                        brigade.ID_user1 = Convert.ToInt32(temp.Rows[i][5]);
+                        brigade.ID_user2 = Convert.ToInt32(temp.Rows[i][6]);
+                        brigade.ID_user3 = Convert.ToInt32(temp.Rows[i][7]);
+                        brigade.ID_user4 = Convert.ToInt32(temp.Rows[i][8]);
+                        brigade.ID_user5 = Convert.ToInt32(temp.Rows[i][9]);
+                        brigade.ID_user6 = Convert.ToInt32(temp.Rows[i][10]);
+                        brigade.ID_user7 = Convert.ToInt32(temp.Rows[i][11]);
+                        brigade.ID_user8 = Convert.ToInt32(temp.Rows[i][12]);
+                        brigade.TaskID = Convert.ToInt32(temp.Rows[i][13]);
+
+                        listBrigade.Add(brigade);
+                    }
+                    DBConnection.Get_Instance().Disconnect();
+
+                    return listBrigade;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                string tmp = ex.Message;
+                DBConnection.Get_Instance().Disconnect();
+                return null;
+            }
+        }
+
         public static List<Brigade> GetBrigade(string Region, string Stage, bool isWork)
         {
             string query; bool isMany = false;
